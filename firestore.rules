@@ -1,0 +1,275 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connectivity Test path
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Primitive Helpers
+    function isValidId(id) { 
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    function isEmailVerified() { return request.auth.token.email_verified == true; }
+    
+    // Auth Token Email for Bootstrap (admin)
+    function isBootstrapAdmin() {
+      return isSignedIn() && 'email' in request.auth.token && request.auth.token.email == 'rdhrdhrdh89.9@gmail.com';
+    }
+
+    function isSuperAdminEmail() {
+      return isSignedIn() && 'email' in request.auth.token && request.auth.token.email == 'rahuljitalphanta@gmail.com';
+    }
+
+    // Role Lookup
+    function isSuperAdmin() {
+      return isSuperAdminEmail() || (
+        isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin'
+      );
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        isBootstrapAdmin() || 
+        isSuperAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function isTeacher() {
+      return isSignedIn() && (
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher')
+      );
+    }
+
+    // Blueprint Validators
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email', 'role']) 
+        && data.name is string && data.name.size() <= 100
+        && data.email is string && data.email.size() <= 150
+        && data.role is string && data.role in ['student', 'teacher', 'admin', 'superadmin']
+        && (!('class' in data) || (data.class is string && data.class.size() <= 50))
+        && (!('section' in data) || (data.section is string && data.section.size() <= 50))
+        && (!('subject' in data) || (data.subject is string && data.subject.size() <= 100))
+        && (!('phone' in data) || (data.phone is string && data.phone.size() <= 20))
+        && (!('photo' in data) || (data.photo is string && data.photo.size() <= 500))
+        && (!('stars' in data) || (data.stars is bool))
+        && (!('isStudentOfMonth' in data) || (data.isStudentOfMonth is bool));
+    }
+
+    function isValidNotice(data) {
+      return data.keys().hasAll(['title', 'category', 'content', 'date', 'target'])
+        && data.title is string && data.title.size() <= 150
+        && data.category is string && data.category in ['Holiday', 'Exam', 'Event', 'Circular', 'Urgent']
+        && data.content is string && data.content.size() <= 50000
+        && data.date is string && data.date.size() <= 50
+        && data.target is string && data.target.size() <= 200
+        && (!('important' in data) || data.important is bool)
+        && (!('expiryDate' in data) || (data.expiryDate is string && data.expiryDate.size() <= 50))
+        && (!('authorId' in data) || (data.authorId is string && data.authorId.size() <= 128))
+        && (!('authorRole' in data) || (data.authorRole is string && data.authorRole.size() <= 50));
+    }
+
+    function isValidAdmission(data) {
+      return data.keys().hasAll(['studentName', 'applyingClass', 'date', 'parentName', 'phone', 'email', 'status'])
+        && data.studentName is string && data.studentName.size() <= 150
+        && data.applyingClass is string && data.applyingClass.size() <= 50
+        && data.date is string && data.date.size() <= 50
+        && data.parentName is string && data.parentName.size() <= 150
+        && data.phone is string && data.phone.size() <= 20
+        && data.email is string && data.email.size() <= 150
+        && data.status is string && data.status in ["New", "Reviewed", "Interview", "Accepted", "Rejected"];
+    }
+
+    function isValidAchievement(data) {
+      return data.keys().hasAll(['title', 'description', 'category', 'date'])
+        && data.title is string && data.title.size() <= 150
+        && data.description is string && data.description.size() <= 5000
+        && data.category is string && data.category in ['Academic', 'Sports', 'Arts', 'Competition', 'School']
+        && data.date is string && data.date.size() <= 50
+        && (!('featured' in data) || data.featured is bool)
+        && (!('image' in data) || (data.image is string && data.image.size() <= 500));
+    }
+
+    function isValidAttendance(data) {
+      return data.keys().hasAll(['date', 'class', 'records'])
+        && data.date is string && data.date.size() <= 50
+        && data.class is string && data.class.size() <= 50
+        && data.records is map;
+    }
+
+    function isValidLeave(data) {
+      return data.keys().hasAll(['userId', 'userName', 'role', 'startDate', 'endDate', 'reason', 'status', 'createdAt'])
+        && data.userId is string && data.userId.size() <= 128
+        && data.startDate is string && data.startDate.size() <= 50
+        && data.endDate is string && data.endDate.size() <= 50
+        && data.status in ["Pending", "Approved", "Rejected"];
+    }
+
+    function isValidGalleryItem(data) {
+      return data.keys().hasAll(['url', 'description', 'uploadedAt'])
+        && data.url is string && data.url.size() <= 1000
+        && data.description is string && data.description.size() <= 2000
+        && data.uploadedAt is string && data.uploadedAt.size() <= 50
+        && (!('category' in data) || (data.category is string && data.category.size() <= 100))
+        && (!('uploadedBy' in data) || (data.uploadedBy is string && data.uploadedBy.size() <= 128));
+    }
+
+    function isValidEvent(data) {
+      return data.keys().hasAll(['title', 'description', 'date', 'time', 'venue', 'category'])
+        && data.title is string && data.title.size() <= 200
+        && data.description is string && data.description.size() <= 5000
+        && data.date is string && data.date.size() <= 50
+        && data.time is string && data.time.size() <= 50
+        && data.venue is string && data.venue.size() <= 200
+        && data.category is string && data.category in ["Cultural", "Academic", "PTM", "Sports", "Other"]
+        && (!('image' in data) || (data.image is string && data.image.size() <= 1000))
+        && (!('registrationLink' in data) || (data.registrationLink is string && data.registrationLink.size() <= 1000));
+    }
+
+    function isValidBlogPost(data) {
+      return data.keys().hasAll(['title', 'content', 'excerpt', 'coverImage', 'category', 'author', 'publishedAt'])
+        && data.title is string && data.title.size() <= 200
+        && data.content is string && data.content.size() <= 100000
+        && data.excerpt is string && data.excerpt.size() <= 1000
+        && data.coverImage is string && data.coverImage.size() <= 2000
+        && data.category is string && data.category.size() <= 100
+        && data.author is string && data.author.size() <= 100
+        && data.publishedAt is string && data.publishedAt.size() <= 50
+        && (!('tags' in data) || (data.tags is list && data.tags.size() <= 20));
+    }
+
+    function isValidSystemSettings(data) {
+      return data.keys().hasAll(['schoolName', 'schoolAddress', 'schoolPhone', 'schoolEmail', 'activeSession'])
+        && data.schoolName is string && data.schoolName.size() <= 200
+        && data.schoolAddress is string && data.schoolAddress.size() <= 500
+        && data.schoolPhone is string && data.schoolPhone.size() <= 20
+        && data.schoolEmail is string && data.schoolEmail.size() <= 150
+        && data.activeSession is string && data.activeSession.size() <= 20
+        && (!('principal' in data) || (
+          data.principal is map 
+          && data.principal.name is string && data.principal.name.size() <= 100
+          && data.principal.designation is string && data.principal.designation.size() <= 100
+          && data.principal.photo is string && data.principal.photo.size() <= 2000
+          && data.principal.message is string && data.principal.message.size() <= 10000
+        ))
+        && (!('emergencyAlert' in data) || (
+          data.emergencyAlert is map 
+          && data.emergencyAlert.message is string && data.emergencyAlert.message.size() <= 500
+          && data.emergencyAlert.active is bool
+        ));
+    }
+
+    // Collections
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isSignedIn() && (request.auth.uid == userId || isAdmin() || isTeacher() || isSuperAdmin());
+      allow list: if isAdmin() || isTeacher() || isSuperAdmin() || (isSignedIn() && 'email' in request.auth.token && resource.data.email == request.auth.token.email);
+      
+      allow create: if isValidId(userId) && (
+        (isSignedIn() && request.auth.uid == userId && isValidUser(incoming()) && (incoming().role in ['student', 'teacher'] || isBootstrapAdmin() || isSuperAdminEmail())) ||
+        (isAdmin() && isValidUser(incoming())) ||
+        (isTeacher() && isValidUser(incoming()) && incoming().role == 'student') // Allow teachers to create students
+      );
+
+      allow update: if isValidId(userId) && (
+        isAdmin() || 
+        isSuperAdmin() ||
+        (isTeacher() && existing().role == 'student' && isValidUser(incoming())) ||
+        (isSignedIn() && request.auth.uid == userId && isValidUser(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'photo', 'class', 'section', 'subject', 'id']))
+      );
+      
+      allow delete: if isAdmin() || isSuperAdmin() || (isTeacher() && existing().role == 'student') || (isSignedIn() && 'email' in request.auth.token && existing().email == request.auth.token.email);
+    }
+
+    match /notices/{noticeId} {
+      allow read: if true; 
+      allow create: if isSignedIn() && (isAdmin() || isTeacher()) && isValidNotice(incoming());
+      allow update, delete: if isSignedIn() && (
+        isAdmin() || 
+        (isTeacher() && 'authorId' in existing() && existing().authorId == request.auth.uid)
+      );
+    }
+
+    match /settings/{configId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidSystemSettings(incoming());
+    }
+
+    match /admissions/{admissionId} {
+      // Anyone can submit (even anonymous, depending on admission page setup)
+      allow create: if isValidId(admissionId) && isValidAdmission(incoming()) && incoming().status == 'New';
+      allow get, list: if isAdmin();
+      allow update: if isValidId(admissionId) && isAdmin() && isValidAdmission(incoming());
+      allow delete: if isValidId(admissionId) && isAdmin();
+    }
+
+    match /achievements/{achievementId} {
+      allow get, list: if true; // Public
+      allow create: if isValidId(achievementId) && isAdmin() && isValidAchievement(incoming());
+      allow update: if isValidId(achievementId) && isAdmin() && isValidAchievement(incoming());
+      allow delete: if isValidId(achievementId) && isAdmin();
+    }
+
+    match /attendance/{attendanceId} {
+      allow get, list: if isSignedIn() && (isAdmin() || isTeacher());
+      allow create: if isValidId(attendanceId) && (isAdmin() || isTeacher()) && isValidAttendance(incoming());
+      allow update: if isValidId(attendanceId) && (isAdmin() || isTeacher()) && isValidAttendance(incoming());
+      allow delete: if isValidId(attendanceId) && isAdmin();
+    }
+
+    match /assignments/{assignmentId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (isAdmin() || isTeacher());
+      allow update, delete: if isSignedIn() && (isAdmin() || (isTeacher() && existing().teacherId == request.auth.uid));
+    }
+
+    match /submissions/{submissionId} {
+      allow read: if isSignedIn() && (isAdmin() || isTeacher() || existing().studentId == request.auth.uid);
+      allow create: if isSignedIn() && incoming().studentId == request.auth.uid;
+      allow update: if isSignedIn() && (isAdmin() || isTeacher());
+    }
+
+    match /studyMaterials/{materialId} {
+      allow read: if true;
+      allow create: if isSignedIn() && (isAdmin() || isTeacher());
+      allow update, delete: if isSignedIn() && (isAdmin() || (isTeacher() && existing().teacherId == request.auth.uid));
+    }
+
+    match /leaves/{leaveId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid || (isTeacher() && resource.data.role == 'student'));
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && (isAdmin() || (isTeacher() && existing().role == 'student'));
+      allow delete: if isSignedIn() && isAdmin();
+    }
+
+    match /gallery/{photoId} {
+      allow read: if true; // Public
+      allow create, update: if isValidId(photoId) && isAdmin() && isValidGalleryItem(incoming());
+      allow delete: if isValidId(photoId) && isAdmin();
+    }
+
+    match /events/{eventId} {
+      allow read: if true; // Public
+      allow create, update: if isValidId(eventId) && isAdmin() && isValidEvent(incoming());
+      allow delete: if isValidId(eventId) && isAdmin();
+    }
+
+    match /blog_posts/{postId} {
+      allow read: if true; // Public
+      allow create, update: if isValidId(postId) && isAdmin() && isValidBlogPost(incoming());
+      allow delete: if isValidId(postId) && isAdmin();
+    }
+  }
+}

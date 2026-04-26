@@ -1,0 +1,71 @@
+{
+  "students": [
+    {
+      "id": "STU001",
+      "name": "Aryan Sharma",
+      "email": "student@demo.com",
+      "password": "password123",
+      "role": "student",
+      "class": "11",
+      "section": "A",
+      "rollNo": "05",
+      "admissionNo": "ADM2024001",
+      "dob": "2008-03-15",
+      "gender": "Male",
+      "bloodGroup": "O+",
+      "phone": "9876543210",
+      "parentName": "Rajesh Sharma",
+      "parentPhone": "9876543211",
+      "address": "123, Gandhi Nagar, Delhi - 110001",
+      "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=Aryan",
+      "fees": {
+        "annual": 85000,
+        "paid": 60000,
+        "pending": 25000
+      },
+      "attendance": 87,
+      "stream": "Science"
+    },
+    {
+      "id": "STU002",
+      "name": "Ananya lyer",
+      "email": "ananya@example.com",
+      "role": "student",
+      "class": "11",
+      "section": "A",
+      "rollNo": "02",
+      "admissionNo": "ADM2024002",
+      "dob": "2008-05-20",
+      "gender": "Female",
+      "bloodGroup": "B+",
+      "phone": "9876543212",
+      "parentName": "Venkatesh lyer",
+      "parentPhone": "9876543213",
+      "address": "45, Vasant Kunj, Delhi",
+      "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ananya",
+      "fees": { "annual": 85000, "paid": 85000, "pending": 0 },
+      "attendance": 92,
+      "stream": "Science"
+    },
+    {
+      "id": "STU003",
+      "name": "Kabir Singh",
+      "email": "kabir@example.com",
+      "role": "student",
+      "class": "10",
+      "section": "B",
+      "rollNo": "12",
+      "admissionNo": "ADM2023045",
+      "dob": "2009-08-10",
+      "gender": "Male",
+      "bloodGroup": "A+",
+      "phone": "9876543214",
+      "parentName": "Harish Singh",
+      "parentPhone": "9876543215",
+      "address": "78, Rohini Sec 9, Delhi",
+      "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=Kabir",
+      "fees": { "annual": 75000, "paid": 40000, "pending": 35000 },
+      "attendance": 78
+    }
+  ]
+}

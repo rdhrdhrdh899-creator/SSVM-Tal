@@ -1,0 +1,286 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile containing role and basic info.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "teacher", "admin"] },
+        "photo": { "type": "string" },
+        "class": { "type": "string" },
+        "section": { "type": "string" },
+        "subject": { "type": "string" },
+        "dob": { "type": "string", "format": "date" },
+        "parentContact": { "type": "string" },
+        "address": { "type": "string" }
+      },
+      "required": ["name", "email", "role"]
+    },
+    "Notice": {
+      "title": "Notice",
+      "description": "A notice broadcasted to specific target audiences.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 150 },
+        "category": { "type": "string", "enum": ["Holiday", "Exam", "Event", "Circular", "Urgent"] },
+        "content": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "important": { "type": "boolean" },
+        "target": { 
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "expiryDate": { "type": "string", "format": "date-time" },
+        "authorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "content", "date", "target"]
+    },
+    "Admission": {
+      "title": "Admission",
+      "description": "Admission application submitted by parents.",
+      "type": "object",
+      "properties": {
+        "studentName": { "type": "string" },
+        "applyingClass": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "parentName": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "status": { "type": "string", "enum": ["New", "Reviewed", "Shortlisted", "Interview Scheduled", "Admitted", "Rejected"] },
+        "data": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentName", "applyingClass", "date", "parentName", "phone", "email", "status"]
+    },
+    "Achievement": {
+      "title": "Achievement",
+      "description": "Student achievements.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "studentName": { "type": "string" },
+        "class": { "type": "string" },
+        "category": { "type": "string", "enum": ["Academic", "Sports", "Arts", "Olympiad", "National"] },
+        "description": { "type": "string" },
+        "year": { "type": "string" },
+        "badge": { "type": "string", "enum": ["Gold", "Silver", "Bronze"] }
+      },
+      "required": ["title", "studentName", "class", "category", "year", "badge"]
+    },
+    "SystemSettings": {
+      "title": "SystemSettings",
+      "description": "Global school and portal configurations.",
+      "type": "object",
+      "properties": {
+        "schoolName": { "type": "string" },
+        "schoolAddress": { "type": "string" },
+        "schoolPhone": { "type": "string" },
+        "schoolEmail": { "type": "string" },
+        "activeSession": { "type": "string" },
+        "maintenanceMode": { "type": "boolean" },
+        "whatsappNumber": { "type": "string" },
+        "primaryColor": { "type": "string" },
+        "secondaryColor": { "type": "string" },
+        "welcomeMessage": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "principal": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "designation": { "type": "string" },
+            "photo": { "type": "string" },
+            "message": { "type": "string" }
+          }
+        },
+        "emergencyAlert": {
+          "type": "object",
+          "properties": {
+            "message": { "type": "string" },
+            "active": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Daily attendance record for a class.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "class": { "type": "string" },
+        "records": { 
+          "type": "object",
+          "description": "Map of studentId to status (P, A, L)"
+        },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["date", "class", "records"]
+    },
+    "Assignment": {
+      "title": "Assignment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "class": { "type": "string" },
+        "subject": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "attachments": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "Submission": {
+      "title": "Submission",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "assignmentId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "status": { "type": "string", "enum": ["Submitted", "Graded", "Pending"] },
+        "marks": { "type": "number" },
+        "remarks": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "submittedAt": { "type": "string" }
+      }
+    },
+    "StudyMaterial": {
+      "title": "StudyMaterial",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "subject": { "type": "string" },
+        "class": { "type": "string" },
+        "type": { "type": "string", "enum": ["pdf", "link", "video"] },
+        "url": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "isHidden": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "LeaveApplication": {
+      "title": "LeaveApplication",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "role": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "Photo and description for the school gallery.",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "uploadedAt": { "type": "string", "format": "date-time" },
+        "uploadedBy": { "type": "string" }
+      },
+      "required": ["url", "description", "uploadedAt"]
+    },
+    "SchoolEvent": {
+      "title": "SchoolEvent",
+      "description": "School events and campus calendar.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "venue": { "type": "string" },
+        "category": { "type": "string", "enum": ["Cultural", "Academic", "PTM", "Sports", "Other"] },
+        "image": { "type": "string" },
+        "registrationLink": { "type": "string" }
+      },
+      "required": ["title", "description", "date", "time", "venue", "category"]
+    },
+    "BlogPost": {
+      "title": "BlogPost",
+      "description": "School news and story articles.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "coverImage": { "type": "string" },
+        "category": { "type": "string" },
+        "author": { "type": "string" },
+        "publishedAt": { "type": "string", "format": "date-time" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["title", "content", "excerpt", "coverImage", "category", "author", "publishedAt"]
+    }
+  },
+  "firestore": {
+    "/settings/{configId}": {
+      "schema": { "$ref": "#/entities/SystemSettings" },
+      "description": "Stores global system configuration."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles and roles."
+    },
+    "/notices/{noticeId}": {
+      "schema": { "$ref": "#/entities/Notice" },
+      "description": "A global collection of notices."
+    },
+    "/admissions/{admissionId}": {
+      "schema": { "$ref": "#/entities/Admission" },
+      "description": "A collection of admission applications."
+    },
+    "/achievements/{achievementId}": {
+      "schema": { "$ref": "#/entities/Achievement" },
+      "description": "A collection of student achievements."
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/Attendance" },
+      "description": "Storage for daily attendance logs."
+    },
+    "/assignments/{assignmentId}": {
+      "schema": { "$ref": "#/entities/Assignment" },
+      "description": "Collection of school assignments."
+    },
+    "/submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/Submission" },
+      "description": "Student assignment submissions."
+    },
+    "/studyMaterials/{materialId}": {
+      "schema": { "$ref": "#/entities/StudyMaterial" },
+      "description": "Subject notes and links."
+    },
+    "/leaves/{leaveId}": {
+      "schema": { "$ref": "#/entities/LeaveApplication" },
+      "description": "Teacher and student leave requests."
+    },
+    "/gallery/{photoId}": {
+      "schema": { "$ref": "#/entities/GalleryItem" },
+      "description": "School photo gallery."
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/SchoolEvent" },
+      "description": "School events and campus calendar."
+    },
+    "/blog_posts/{postId}": {
+      "schema": { "$ref": "#/entities/BlogPost" },
+      "description": "School news and story articles."
+    }
+  }
+}
