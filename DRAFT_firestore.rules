@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Helpers
+    function isValidId(id) { 
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    function isEmailVerified() { return request.auth.token.email_verified == true; }
+    
+    // Auth Token Email for Bootstrap (admin)
+    function isBootstrapAdmin() {
+      // Allow specific admin email during setup
+      return request.auth.token.email == 'rdhrdhrdh89.9@gmail.com';
+    }
+
+    // Role Lookup
+    function isAdmin() {
+      return isSignedIn() && (isBootstrapAdmin() || (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    // Blueprint Validators
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email', 'role']) 
+        && data.name is string && data.name.size() <= 100
+        && data.email is string && data.email.size() <= 150
+        && data.role is string && data.role in ['student', 'teacher', 'admin'];
+    }
+
+    function isValidNotice(data) {
+      return data.keys().hasAll(['title', 'category', 'content', 'date', 'target'])
+        && data.title is string && data.title.size() <= 150
+        && data.category is string && data.category in ['Holiday', 'Exam', 'Event', 'Circular', 'Urgent']
+        && data.content is string && data.content.size() <= 50000
+        && data.date is string && data.date.size() <= 50;
+    }
+
+    function isValidAdmission(data) {
+      return data.keys().hasAll(['studentName', 'applyingClass', 'date', 'parentName', 'phone', 'email', 'status'])
+        && data.studentName is string && data.studentName.size() <= 150
+        && data.applyingClass is string && data.applyingClass.size() <= 50
+        && data.date is string && data.date.size() <= 50
+        && data.parentName is string && data.parentName.size() <= 150
+        && data.phone is string && data.phone.size() <= 20
+        && data.email is string && data.email.size() <= 150
+        && data.status is string && data.status in ["New", "Reviewed", "Shortlisted", "Interview Scheduled", "Admitted", "Rejected"];
+    }
+
+    function isValidAchievement(data) {
+      return data.keys().hasAll(['title', 'studentName', 'class', 'category', 'year', 'badge'])
+        && data.title is string && data.title.size() <= 150
+        && data.studentName is string && data.studentName.size() <= 150
+        && data.class is string && data.class.size() <= 50
+        && data.category is string && data.category in ['Academic', 'Sports', 'Arts', 'Olympiad', 'National']
+        && data.year is string && data.year.size() <= 10
+        && data.badge is string && data.badge in ['Gold', 'Silver', 'Bronze'];
+    }
+
+    // Collections
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      
+      allow create: if isValidId(userId) && isSignedIn() && request.auth.uid == userId 
+                    && isValidUser(incoming()) 
+                    && incoming().role == 'student'; // Prevent self-assigning admin
+
+      allow update: if isValidId(userId) && isSignedIn() && (
+        isAdmin() || 
+        (request.auth.uid == userId && isValidUser(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'photo', 'class', 'section', 'subject']))
+      );
+      
+      allow delete: if isAdmin() && isValidId(userId);
+    }
+
+    match /notices/{noticeId} {
+      allow get, list: if true; // Publicly readable for school notices
+      allow create: if isValidId(noticeId) && isAdmin() && isValidNotice(incoming());
+      allow update: if isValidId(noticeId) && isAdmin() && isValidNotice(incoming());
+      allow delete: if isValidId(noticeId) && isAdmin();
+    }
+
+    match /admissions/{admissionId} {
+      // Anyone can submit (even anonymous, depending on admission page setup)
+      allow create: if isValidId(admissionId) && isValidAdmission(incoming()) && incoming().status == 'New';
+      allow get, list: if isAdmin();
+      allow update: if isValidId(admissionId) && isAdmin() && isValidAdmission(incoming());
+      allow delete: if isValidId(admissionId) && isAdmin();
+    }
+
+    match /achievements/{achievementId} {
+      allow get, list: if true; // Public
+      allow create: if isValidId(achievementId) && isAdmin() && isValidAchievement(incoming());
+      allow update: if isValidId(achievementId) && isAdmin() && isValidAchievement(incoming());
+      allow delete: if isValidId(achievementId) && isAdmin();
+    }
+  }
+}

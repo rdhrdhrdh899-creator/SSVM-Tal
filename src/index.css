@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --color-navy-950: #0a0f2e;
+  --color-navy-900: #0d1541;
+  --color-navy-800: #1a237e;
+  --color-navy-700: #283593;
+  --color-navy-600: #3949ab;
+
+  --color-gold-500: #f59e0b;
+  --color-gold-400: #fbbf24;
+  --color-gold-300: #fcd34d;
+
+  --color-maroon-700: #7f1d1d;
+  --color-maroon-600: #991b1b;
+  --color-maroon-500: #b91c1c;
+
+  --color-emerald-600: #059669;
+  --color-emerald-500: #10b981;
+  --color-emerald-400: #34d399;
+
+  --color-cream-50: #fffbf0;
+  --color-cream-100: #fef9ec;
+
+  --background-pattern: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(245, 158, 11, 0.05) 10px, rgba(245, 158, 11, 0.05) 20px);
+}
+
+@layer base {
+  body {
+    @apply font-sans text-navy-950 bg-gray-50;
+  }
+}
+
+.heading-serif {
+  @apply font-serif;
+}
+
+/* Custom Glassmorphism */
+.glass-nav {
+  @apply bg-white/80 backdrop-blur-md sticky top-0 z-50;
+}
+
+.gold-gradient-text {
+  @apply bg-gradient-to-r from-gold-500 to-gold-300 bg-clip-text text-transparent;
+}
+
+.diagonal-pattern {
+  background-image: var(--background-pattern);
+}
+
+/* Custom Minimalist Gold Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gold-400/40 rounded-full transition-colors;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gold-500;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #fbbf2466 transparent;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

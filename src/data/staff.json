@@ -1,0 +1,38 @@
+{
+  "teachers": [
+    {
+      "id": "TCH001",
+      "name": "Dr. Ramesh Verma",
+      "email": "teacher@demo.com",
+      "password": "password123",
+      "role": "teacher",
+      "subject": "Physics",
+      "classAssigned": "11A",
+      "qualification": "Ph.D in Physics",
+      "phone": "9812345678",
+      "status": "Active",
+      "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ramesh"
+    },
+    {
+      "id": "TCH002",
+      "name": "Mrs. Priya Das",
+      "email": "priya@example.com",
+      "role": "teacher",
+      "subject": "Mathematics",
+      "classAssigned": "10B",
+      "qualification": "M.Sc, B.Ed",
+      "phone": "9812345679",
+      "status": "Active",
+      "photo": "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya"
+    }
+  ],
+  "admins": [
+    {
+      "id": "ADM001",
+      "name": "Admin User",
+      "email": "admin@demo.com",
+      "password": "password123",
+      "role": "admin"
+    }
+  ]
+}

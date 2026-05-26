@@ -1,0 +1,34 @@
+{
+  "notices": [
+    {
+      "id": "N001",
+      "title": "Diwali Holiday Notice",
+      "category": "Holiday",
+      "content": "School will remain closed from October 30 to November 3 on account of Diwali festival. Wishing all students a safe and happy festival of lights.",
+      "date": "2024-10-25",
+      "important": true,
+      "target": "All",
+      "expiryDate": "2024-11-03"
+    },
+    {
+      "id": "N002",
+      "title": "Annual Sports Meet 2024",
+      "category": "Event",
+      "content": "The Annual Sports Meet is scheduled for November 15-16. Registrations for track and field events are now open.",
+      "date": "2024-11-01",
+      "important": true,
+      "target": "Students",
+      "expiryDate": "2024-11-16"
+    },
+    {
+      "id": "N003",
+      "title": "Unit Test - II Schedule",
+      "category": "Exam",
+      "content": "Unit Test 2 will commence from December 5th. Detailed timetable has been uploaded in the student portal.",
+      "date": "2024-11-10",
+      "important": false,
+      "target": "Students",
+      "expiryDate": "2024-12-15"
+    }
+  ]
+}
