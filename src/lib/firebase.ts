@@ -8,7 +8,6 @@ export const app = initializeApp(firebaseConfig);
 // Initialize Firestore with long polling enabled to bypass potential WebSocket blocks
 const firestoreSettings = {
   experimentalForceLongPolling: true,
-  experimentalAutoDetectLongPolling: true,
 };
 
 const databaseId = (firebaseConfig as any).firestoreDatabaseId || '(default)';
