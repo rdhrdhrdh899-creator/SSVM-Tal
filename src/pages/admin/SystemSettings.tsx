@@ -223,7 +223,7 @@ export const SystemSettings = () => {
                         onChange={(e) => handleInputChange('mapLongitude', e.target.value === '' ? '' : parseFloat(e.target.value))}
                       />
                       <Input 
-                        label="Zoom Level (ज़ूम स्तर)"
+                        label="Zoom Level"
                         type="number"
                         min="1"
                         max="22"
@@ -521,6 +521,20 @@ export const SystemSettings = () => {
                             </div>
                          </div>
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            primaryColor: '#001F3F',
+                            secondaryColor: '#FFD700'
+                          });
+                        }}
+                        className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-navy-950 font-bold text-xs rounded-xl transition-all border border-gray-200"
+                      >
+                        <RefreshCcw size={14} className="text-navy-900" />
+                        Reset Colors to Blue & Gold (डिफ़ॉल्ट रंग सेट करें)
+                      </button>
                     </div>
 
                     <div className="space-y-4">
