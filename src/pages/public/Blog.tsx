@@ -87,7 +87,7 @@ export const Blog = () => {
                     <Card className="group h-full overflow-hidden border-0 shadow-sm hover:shadow-xl transition-all duration-500 bg-white">
                       <div className="aspect-[16/10] overflow-hidden relative">
                         <img 
-                          src={post.coverImage} 
+                          src={post.coverImage || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=600'} 
                           alt={post.title}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />

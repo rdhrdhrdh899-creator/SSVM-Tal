@@ -30,7 +30,7 @@ export const PrincipalSection = () => {
               <div className="absolute -inset-4 bg-gold-400/20 rounded-[2.5rem] blur-xl opacity-50 group-hover:opacity-100 transition-opacity" />
               <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white aspect-[4/5]">
                 <img 
-                  src={principal.photo} 
+                  src={principal.photo || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&h=400&auto=format&fit=crop'} 
                   alt={principal.name}
                   className="w-full h-full object-cover"
                 />

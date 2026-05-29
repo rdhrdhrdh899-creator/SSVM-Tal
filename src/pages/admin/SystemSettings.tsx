@@ -198,6 +198,44 @@ export const SystemSettings = () => {
                       icon={<Globe size={18} className="text-gray-400" />}
                     />
                   </div>
+
+                  <div className="border-t border-gray-100 pt-6 mt-6">
+                    <h4 className="text-sm font-black text-navy-900 mb-2 flex items-center gap-2">
+                      <MapPin size={16} className="text-gold-500" /> Google Map Location Config
+                    </h4>
+                    <p className="text-xs text-gray-400 mb-4">Set the precise geographic coordinates of the school for the interactive contact map (Satellite Mode).</p>
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <Input 
+                        label="Latitude (अक्षांश)"
+                        type="number"
+                        step="any"
+                        placeholder="e.g. 28.4717"
+                        value={formData.mapLatitude !== undefined ? formData.mapLatitude : ''}
+                        onChange={(e) => handleInputChange('mapLatitude', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                      />
+                      <Input 
+                        label="Longitude (देशांतर)"
+                        type="number"
+                        step="any"
+                        placeholder="e.g. 77.4878"
+                        value={formData.mapLongitude !== undefined ? formData.mapLongitude : ''}
+                        onChange={(e) => handleInputChange('mapLongitude', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                      />
+                      <Input 
+                        label="Zoom Level (ज़ूम स्तर)"
+                        type="number"
+                        min="1"
+                        max="22"
+                        placeholder="e.g. 16"
+                        value={formData.mapZoom !== undefined ? formData.mapZoom : ''}
+                        onChange={(e) => handleInputChange('mapZoom', e.target.value === '' ? '' : parseInt(e.target.value))}
+                      />
+                    </div>
+                    <p className="text-[10px] text-gray-400 italic mt-2">
+                      * Tip: Right-click your location on Google Maps to copy the exact Latitude and Longitude coordinates. Standard zoom for a clear view is 15-18.
+                    </p>
+                  </div>
+
                   <div className="space-y-1">
                     <label className="text-sm font-bold text-navy-900 ml-1">Physical Address</label>
                     <textarea 

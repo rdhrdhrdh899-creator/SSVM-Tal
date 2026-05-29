@@ -36,7 +36,7 @@ export const PrincipalMessagePage = () => {
                 <Card className="p-0 border-0 shadow-2xl bg-white rounded-[2rem] overflow-hidden">
                   <div className="aspect-[4/5] overflow-hidden">
                     <img 
-                      src={principal.photo} 
+                      src={principal.photo || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&h=400&auto=format&fit=crop'} 
                       alt={principal.name}
                       className="w-full h-full object-cover"
                     />

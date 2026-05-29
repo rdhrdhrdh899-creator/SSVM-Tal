@@ -9,10 +9,22 @@ import { CONTACT_INFO, SCHOOL_NAME } from '../../constants';
 import { useSettingsStore } from '../../store/settingsStore';
 import { db } from '../../lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+
+const API_KEY =
+  process.env.GOOGLE_MAPS_PLATFORM_KEY ||
+  (import.meta as any).env?.VITE_GOOGLE_MAPS_PLATFORM_KEY ||
+  (globalThis as any).GOOGLE_MAPS_PLATFORM_KEY ||
+  '';
+const hasValidKey = Boolean(API_KEY) && API_KEY !== 'YOUR_API_KEY' && API_KEY.trim() !== '';
 
 export const Contact = () => {
   const { settings } = useSettingsStore();
   const currentSchoolName = settings?.schoolName || SCHOOL_NAME;
+
+  const mapLat = typeof settings?.mapLatitude === 'number' ? settings.mapLatitude : 28.4717;
+  const mapLng = typeof settings?.mapLongitude === 'number' ? settings.mapLongitude : 77.4878;
+  const mapZoom = typeof settings?.mapZoom === 'number' ? settings.mapZoom : 16;
 
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -22,6 +34,7 @@ export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [mapType, setMapType] = useState<'h' | 'm'>('h'); // 'h' = satellite/hybrid, 'm' = standard map
 
   const contactDetails = [
     { icon: MapPin, title: 'Our Campus', content: settings?.schoolAddress || CONTACT_INFO.address, color: 'text-gold-500' },
@@ -194,13 +207,75 @@ export const Contact = () => {
               </div>
             </div>
 
-            {/* Map Placeholder */}
-            <div className="mt-12 h-64 bg-gray-100 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl relative">
-              <div className="absolute inset-0 bg-navy-950 opacity-20" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-navy-900">
-                <MapPin size={40} className="mb-2 text-gold-500" />
-                <span className="font-bold uppercase tracking-widest text-xs">interactive map disabled</span>
-              </div>
+            {/* Real Google Map in Satellite/Hybrid Mode */}
+            <div className="mt-12 h-[380px] bg-gray-150 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl relative group">
+              {!hasValidKey ? (
+                <div className="relative w-full h-full">
+                  <iframe
+                    id="embedded-map"
+                    src={`https://maps.google.com/maps?q=${mapLat},${mapLng}&z=${mapZoom}&t=${mapType}&output=embed`}
+                    className="w-full h-full border-0"
+                    allowFullScreen
+                    loading="lazy"
+                    title="School Campus Location"
+                  />
+                  {/* Floating Custom Controllers */}
+                  <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10 pointer-events-none">
+                    <div className="bg-navy-950/90 text-white backdrop-blur-md py-1.5 px-3 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1.5 border border-white/10 pointer-events-auto">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>{mapType === 'h' ? 'Satellite View (सैटेलाइट व्यू)' : 'Standard View (नॉर्मल व्यू)'}</span>
+                    </div>
+
+                    <div className="flex gap-2 pointer-events-auto">
+                      <button
+                        type="button"
+                        onClick={() => setMapType('h')}
+                        className={`px-3 py-1 text-[10px] font-bold rounded-lg shadow-md transition-all border ${
+                          mapType === 'h'
+                            ? 'bg-gold-500 text-navy-950 border-gold-400'
+                            : 'bg-navy-950/80 text-white border-white/10 hover:bg-navy-950'
+                        }`}
+                      >
+                        Satellite
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMapType('m')}
+                        className={`px-3 py-1 text-[10px] font-bold rounded-lg shadow-md transition-all border ${
+                          mapType === 'm'
+                            ? 'bg-gold-500 text-navy-950 border-gold-400'
+                            : 'bg-navy-950/80 text-white border-white/10 hover:bg-navy-950'
+                        }`}
+                      >
+                        Normal Map
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <APIProvider apiKey={API_KEY} version="weekly">
+                  <div className="relative w-full h-full">
+                    <Map
+                      defaultCenter={{ lat: mapLat, lng: mapLng }}
+                      defaultZoom={mapZoom}
+                      defaultMapTypeId="hybrid"
+                      mapId="DEMO_MAP_ID"
+                      internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
+                      style={{ width: '100%', height: '100%' }}
+                    >
+                      <AdvancedMarker position={{ lat: mapLat, lng: mapLng }}>
+                        <Pin background="#D97706" glyphColor="#ffffff" borderColor="#78350F" />
+                      </AdvancedMarker>
+                    </Map>
+
+                    {/* Map Mode Badge Overlay */}
+                    <div className="absolute top-4 left-4 bg-navy-950/90 text-white backdrop-blur-md py-1.5 px-3 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1.5 border border-white/10 z-10 transition-all hover:bg-navy-950">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>Satellite Mode Live (सैटेलाइट व्यू)</span>
+                    </div>
+                  </div>
+                </APIProvider>
+              )}
             </div>
           </motion.div>
         </div>

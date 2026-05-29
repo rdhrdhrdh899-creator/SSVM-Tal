@@ -90,6 +90,9 @@ export interface SystemSettings {
   secondaryColor: string;
   welcomeMessage: string;
   logoUrl?: string;
+  mapLatitude?: number;
+  mapLongitude?: number;
+  mapZoom?: number;
   principal?: {
     name: string;
     designation: string;

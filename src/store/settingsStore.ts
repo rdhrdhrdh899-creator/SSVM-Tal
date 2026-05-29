@@ -25,6 +25,9 @@ const DEFAULT_SETTINGS: Omit<SystemSettings, 'id'> = {
   primaryColor: '#001F3F',
   secondaryColor: '#FFD700',
   welcomeMessage: 'Welcome to our digital school portal. Stay updated with the latest notices and academic resources.',
+  mapLatitude: 28.4717,
+  mapLongitude: 77.4878,
+  mapZoom: 16,
   principal: {
     name: 'Dr. Sarah Mitchell',
     designation: 'Principal',

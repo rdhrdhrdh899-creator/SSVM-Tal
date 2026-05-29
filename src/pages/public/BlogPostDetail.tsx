@@ -38,7 +38,7 @@ export const BlogPostDetail = () => {
       <article className="bg-cream-50 pb-20">
         <div className="relative h-[60vh] overflow-hidden">
           <img 
-            src={post.coverImage} 
+            src={post.coverImage || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=800'} 
             alt={post.title}
             className="w-full h-full object-cover"
           />
@@ -129,7 +129,7 @@ export const BlogPostDetail = () => {
                   <Link key={recent.id} to={`/blog/${recent.id}`}>
                     <Card className="p-3 border-0 shadow-sm hover:shadow-md transition-all flex gap-4 bg-white group">
                       <img 
-                        src={recent.coverImage} 
+                        src={recent.coverImage || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=400'} 
                         className="w-20 h-20 object-cover rounded-xl"
                         alt={recent.title}
                       />
