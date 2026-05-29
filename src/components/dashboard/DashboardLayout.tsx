@@ -13,6 +13,7 @@ import { Badge } from '../ui/Badge';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { NotificationPopover } from './NotificationPopover';
+import { SCHOOL_NAME } from '../../constants';
 
 interface NavItem {
   label: string;
@@ -64,7 +65,7 @@ export const DashboardLayout = ({ children, navItems }: DashboardLayoutProps) =>
               className="flex flex-col"
             >
               <span className="heading-serif font-bold text-sm tracking-tight text-white leading-none uppercase">
-                {settings?.schoolName || 'APEX VIDYA'}
+                {settings?.schoolName || SCHOOL_NAME}
               </span>
               <span 
                 className="text-[9px] uppercase tracking-widest font-bold"

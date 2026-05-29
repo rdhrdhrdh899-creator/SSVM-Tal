@@ -21,6 +21,7 @@ import { useLeaveStore } from '../../store/leaveStore';
 import { useBlogStore } from '../../store/blogStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { Lock } from 'lucide-react';
+import { SCHOOL_NAME } from '../../constants';
 
 // Mock Data for Charts
 const revenueData = [
@@ -323,7 +324,7 @@ export const AdminDashboard = () => {
       <SubscriptionGuard 
         isOpen={isSubsGuardOpen} 
         onClose={() => setIsSubsGuardOpen(false)}
-        schoolName={settings?.schoolName || 'St. Xavier International School'}
+        schoolName={settings?.schoolName || SCHOOL_NAME}
       />
 
       <Modal 

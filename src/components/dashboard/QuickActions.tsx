@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAuthStore } from '../../store/authStore';
 import { SubscriptionGuard } from '../ui/SubscriptionGuard';
+import { SCHOOL_NAME } from '../../constants';
 
 export const QuickActions = () => {
   const { settings, updateSettings } = useSettingsStore();
@@ -151,7 +152,7 @@ export const QuickActions = () => {
       <SubscriptionGuard 
         isOpen={isSubsGuardOpen} 
         onClose={() => setIsSubsGuardOpen(false)}
-        schoolName={settings?.schoolName || 'St. Xavier International School'}
+        schoolName={settings?.schoolName || SCHOOL_NAME}
       />
     </Card>
   );

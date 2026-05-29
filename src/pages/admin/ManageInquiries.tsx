@@ -12,6 +12,7 @@ import { collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/fire
 import { useSettingsStore } from '../../store/settingsStore';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { motion, AnimatePresence } from 'motion/react';
+import { SCHOOL_NAME } from '../../constants';
 
 interface Inquiry {
   id: string;
@@ -106,7 +107,7 @@ export const ManageInquiries = () => {
       }
 
       setExportStatus('Creating Google Spreadsheet...');
-      const schoolName = settings?.schoolName || 'St. Xavier';
+      const schoolName = settings?.schoolName || SCHOOL_NAME;
       
       const createResponse = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
         method: 'POST',

@@ -13,6 +13,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { AddTeacherModal } from '../../components/dashboard/AddTeacherModal';
 import { SubscriptionGuard } from '../../components/ui/SubscriptionGuard';
+import { SCHOOL_NAME } from '../../constants';
 
 export const ManageTeachers = () => {
   const { teachers, loading, fetchTeachers, deleteTeacher } = useTeacherStore();
@@ -203,7 +204,7 @@ export const ManageTeachers = () => {
       <SubscriptionGuard 
         isOpen={isSubsGuardOpen} 
         onClose={() => setIsSubsGuardOpen(false)}
-        schoolName={settings?.schoolName || 'St. Xavier International School'}
+        schoolName={settings?.schoolName || SCHOOL_NAME}
       />
     </div>
   );

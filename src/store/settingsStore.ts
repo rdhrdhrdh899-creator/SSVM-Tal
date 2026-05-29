@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { SystemSettings } from '../types';
 import { handleFirestoreError, OperationType } from '../lib/firestoreErrorHandler';
+import { SCHOOL_NAME, CONTACT_INFO } from '../constants';
 
 interface SettingsState {
   settings: SystemSettings | null;
@@ -15,13 +16,13 @@ interface SettingsState {
 }
 
 const DEFAULT_SETTINGS: Omit<SystemSettings, 'id'> = {
-  schoolName: 'St. Xavier International School',
-  schoolAddress: 'Main Street, Sector 12, City Center, PIN-123456',
-  schoolPhone: '+91 98765 43210',
-  schoolEmail: 'contact@stxavier.edu.in',
+  schoolName: SCHOOL_NAME,
+  schoolAddress: CONTACT_INFO.address,
+  schoolPhone: CONTACT_INFO.phone,
+  schoolEmail: CONTACT_INFO.email,
   activeSession: '2024-25',
   maintenanceMode: false,
-  whatsappNumber: '919876543210',
+  whatsappNumber: CONTACT_INFO.whatsapp.replace(/\D/g, ''),
   primaryColor: '#001F3F',
   secondaryColor: '#FFD700',
   welcomeMessage: 'Welcome to our digital school portal. Stay updated with the latest notices and academic resources.',

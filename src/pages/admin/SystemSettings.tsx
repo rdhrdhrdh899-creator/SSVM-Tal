@@ -12,6 +12,7 @@ import { Input } from '../../components/ui/Input';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAuthStore } from '../../store/authStore';
 import { SubscriptionGuard } from '../../components/ui/SubscriptionGuard';
+import { SCHOOL_NAME } from '../../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import { Lock } from 'lucide-react';
 
@@ -623,7 +624,7 @@ export const SystemSettings = () => {
       <SubscriptionGuard 
         isOpen={isSubsGuardOpen} 
         onClose={() => setIsSubsGuardOpen(false)}
-        schoolName={settings?.schoolName || 'St. Xavier International School'}
+        schoolName={settings?.schoolName || SCHOOL_NAME}
       />
     </div>
   );
