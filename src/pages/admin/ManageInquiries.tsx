@@ -37,6 +37,7 @@ export const ManageInquiries = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [exportStatus, setExportStatus] = useState('');
   const [createdSheetUrl, setCreatedSheetUrl] = useState('');
+  const [exportError, setExportError] = useState<string | null>(null);
 
   useEffect(() => {
     const unsub = onSnapshot(
@@ -90,6 +91,7 @@ export const ManageInquiries = () => {
     setIsExporting(true);
     setExportStatus('Connecting to Google Account...');
     setCreatedSheetUrl('');
+    setExportError(null);
 
     try {
       // Setup auth provider with specific scopes
@@ -177,7 +179,11 @@ export const ManageInquiries = () => {
       setExportStatus('Success! Click below to view Spreadsheet.');
     } catch (error: any) {
       console.error('Sheets export error:', error);
-      alert(error.message || 'Export to Google Sheets failed. Check console.');
+      let errMsg = error.message || 'Export to Google Sheets failed.';
+      if (error.code === 'auth/popup-closed-by-user' || String(error).includes('popup-closed-by-user')) {
+        errMsg = 'popup-closed-by-user';
+      }
+      setExportError(errMsg);
       setExportStatus('');
     } finally {
       setIsExporting(false);
@@ -221,33 +227,90 @@ export const ManageInquiries = () => {
         </div>
         
         {/* Google Sheet Link / Button */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          {createdSheetUrl && (
-            <a 
-              href={createdSheetUrl} 
-              target="_blank" 
-              rel="noreferrer"
-              className="px-5 py-3 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-emerald-200 transition-all font-mono"
-            >
-              <ExternalLink size={16} /> Open Created Spreadsheet
-            </a>
-          )}
-          
-          <Button 
-            variant="outline"
-            onClick={handleExportToSheets}
-            disabled={isExporting}
-            className="rounded-2xl flex items-center justify-center gap-2 border-green-200 text-green-700 hover:bg-green-50/50 hover:text-green-800 font-bold"
-          >
-            {isExporting ? (
-              <RefreshCw className="animate-spin text-green-600" size={18} />
-            ) : (
-              <FileSpreadsheet className="text-green-600" size={18} />
+        <div className="flex flex-col items-stretch md:items-end gap-1.5 shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {createdSheetUrl && (
+              <a 
+                href={createdSheetUrl} 
+                target="_blank" 
+                rel="noreferrer"
+                className="px-5 py-3 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm border border-emerald-200 transition-all font-mono"
+              >
+                <ExternalLink size={16} /> Open Created Spreadsheet
+              </a>
             )}
-            {isExporting ? 'Exporting...' : 'Export to Google Sheet'}
-          </Button>
+            
+            <Button 
+              variant="outline"
+              onClick={handleExportToSheets}
+              disabled={isExporting}
+              className="rounded-2xl flex items-center justify-center gap-2 border-green-200 text-green-700 hover:bg-green-50/50 hover:text-green-800 font-bold"
+            >
+              {isExporting ? (
+                <RefreshCw className="animate-spin text-green-600" size={18} />
+              ) : (
+                <FileSpreadsheet className="text-green-600" size={18} />
+              )}
+              {isExporting ? 'Exporting...' : 'Export to Google Sheet'}
+            </Button>
+          </div>
+          <span className="text-[11px] text-gray-500 font-bold text-left md:text-right max-w-sm leading-tight bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100 mt-1">
+            💡 लॉगिन के दौरान <b className="text-navy-950 font-black">"Advanced"</b> ➔ <b className="text-navy-950 font-black">"Go to React Applet (unsafe)"</b> विकल्प पर क्लिक करें।
+          </span>
         </div>
       </div>
+
+      {/* Google Sheets Export Tips / Errors */}
+      {exportError === 'popup-closed-by-user' && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-6 bg-amber-50 border border-amber-200 rounded-[1.5rem] text-amber-950 space-y-3 shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <AlertCircle className="text-amber-600 shrink-0" size={24} />
+            <h4 className="font-bold text-lg text-amber-950 heading-serif">लॉगिन पॉपअप बंद हो गया! (How to fix 'Unverified App' screen)</h4>
+          </div>
+          <div className="text-sm space-y-3 font-medium leading-relaxed pl-9">
+            <div className="bg-white/80 p-4 rounded-2xl border border-amber-100 space-y-2">
+              <p className="font-bold text-amber-950">💡 यह पूरी तरह से सुरक्षित है! (No need to worry):</p>
+              <p className="text-xs text-gray-650">चूंकि यह ऐप डेवलपमेंट/परीक्षण मोड में चल रहा है, इसलिए गूगल शुरुआत में "Unverified App" वार्निंग दिखाता है। इसे बायपास करके काम पूरा करने के लिए नीचे दिए गए कदम उठाएं:</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6 pt-2">
+              <div className="space-y-2">
+                <p className="font-bold text-navy-950 text-xs uppercase tracking-wider border-b border-amber-200 pb-1">English Guides:</p>
+                <ol className="list-decimal pl-4 space-y-1.5 text-xs text-gray-700">
+                  <li>Click on <strong>"Export to Google Sheet"</strong> button above.</li>
+                  <li>In the login window, click the small <strong className="text-navy-950">"Advanced"</strong> link on the bottom-left.</li>
+                  <li>Click on <strong className="text-navy-950">"Go to React Applet (unsafe)"</strong> link at the bottom.</li>
+                  <li>Select all requested permissions, then click <strong className="text-navy-950">"Continue"</strong> or <strong className="text-navy-950">"Allow"</strong>.</li>
+                </ol>
+              </div>
+              <div className="space-y-2">
+                <p className="font-bold text-navy-950 text-xs uppercase tracking-wider border-b border-amber-200 pb-1">हिंदी में निर्देश:</p>
+                <ol className="list-decimal pl-4 space-y-1.5 text-xs text-gray-700">
+                  <li>ऊपर दिए गए <strong>"Export to Google Sheet"</strong> बटन पर दोबारा क्लिक करें।</li>
+                  <li>पॉपअप खुलने पर नीचे बाईं तरफ छोटे अक्षरों में लिखे <strong className="text-navy-950">"Advanced" (उन्नत)</strong> पर क्लिक करें।</li>
+                  <li>फिर नीचे आ रहे <strong className="text-navy-950">"Go to React Applet (unsafe)"</strong> लिंक पर क्लिक करें।</li>
+                  <li>मांगी गई Google Sheets की अनुमति को टिक करें, और <strong className="text-navy-950">"Continue" (जारी रखें)</strong> पर क्लिक कर दें।</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {exportError && exportError !== 'popup-closed-by-user' && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-900 flex items-center gap-3 text-sm font-bold"
+        >
+          <AlertCircle className="text-red-600" size={18} />
+          <span>Error during export: {exportError}</span>
+        </motion.div>
+      )}
 
       {/* Export Status Notification */}
       {exportStatus && (
