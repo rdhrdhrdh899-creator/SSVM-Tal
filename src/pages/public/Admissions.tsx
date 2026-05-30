@@ -17,7 +17,6 @@ const admissionSchema = z.object({
   studentName: z.string().min(3, 'Name is too short'),
   dob: z.string().min(1, 'Date of birth is required'),
   gender: z.string().min(1, 'Please select gender'),
-  nationality: z.string().min(1, 'Nationality is required'),
   // Step 2: Academic
   applyingClass: z.string().min(1, 'Select a class'),
   previousSchool: z.string().min(1, 'Previous school name is required'),
@@ -55,7 +54,7 @@ export const Admissions = () => {
 
   const nextStep = async () => {
     const fields: any = {
-      1: ['studentName', 'dob', 'gender', 'nationality'],
+      1: ['studentName', 'dob', 'gender'],
       2: ['applyingClass', 'previousSchool', 'previousMarks'],
       3: ['fatherName', 'motherName', 'phone', 'email'],
       4: ['address', 'pincode'],
@@ -167,7 +166,6 @@ export const Admissions = () => {
                         </select>
                         {errors.gender && <p className="text-xs text-red-500 ml-1 mt-1">{errors.gender.message}</p>}
                       </div>
-                      <Input label="Nationality" placeholder="e.g. Indian" {...register('nationality')} error={errors.nationality?.message} />
                     </div>
                   </motion.div>
                 )}

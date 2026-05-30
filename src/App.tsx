@@ -13,6 +13,9 @@ import { Login } from './pages/auth/Login';
 import { Blog } from './pages/public/Blog';
 import { BlogPostDetail } from './pages/public/BlogPostDetail';
 import { PrincipalMessagePage } from './pages/public/PrincipalMessagePage';
+import { PrivacyPolicy } from './pages/public/PrivacyPolicy';
+import { TermsAndConditions } from './pages/public/TermsAndConditions';
+import { Sitemap } from './pages/public/Sitemap';
 import { PublicNavbar } from './components/public/PublicNavbar';
 import { Footer } from './components/public/Footer';
 import { WhatsAppWidget } from './components/public/WhatsAppWidget';
@@ -106,6 +109,9 @@ const AppContent = () => {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogPostDetail />} />
             <Route path="/principal-message" element={<PrincipalMessagePage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/sitemap" element={<Sitemap />} />
             <Route path="/login" element={<Login />} />
             
             {/* Dashboard Routes */}
